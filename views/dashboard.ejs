@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+ <!-- Font  -->
+ <link rel="preconnect" href="https://fonts.gstatic.com">
+ <link href="https://fonts.googleapis.com/css2?family=Kulim+Park&display=swap" rel="stylesheet">
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.0/font/bootstrap-icons.css">
+  
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.css" integrity="sha512-/zs32ZEJh+/EO2N1b0PEdoA10JkdC3zJ8L5FTiQu82LR9S/rOQNfQN7U59U9BC12swNeRAz3HSzIL2vpp4fv3w==" crossorigin="anonymous" />
+
+
+  <title> Dashboard | Shortly</title>
+</head>
+<style>
+  body {
+    font-family: 'Kulim Park', sans-serif;
+            font-size: larger;
+  }
+  .bi {
+    color: #0003FF;
+  }
+
+  .customborder {
+            border-radius: 2%;
+            border: 2px solid #E95420;
+        }
+
+        .card {
+            border: none;
+            border-radius: 25px;
+        }
+
+</style>
+
+<body>
+
+  <!-- navbar  -->
+  <nav class="navbar navbar-expand-lg navbar-light p-4">
+    <div class="container">
+      <a class="navbar-brand" href="#">
+        <img src="/static/images/logo.png" width="150" height="36" alt="Logo">
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="#">Home</a>
+          </li>
+          <% if(logged){ %>
+            <li class="nav-item">
+              <a class="nav-link" href="/logout">Logout</a>
+            </li>
+            <% }else{ %>
+              <li class="nav-item">
+                <a class="nav-link" href="/login">Login</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/signup">Signup</a>
+              </li>
+              <% } %>
+            
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <!-- navbar end  -->
+
+
+    <div class="container">
+
+        <% if(!verified){ %>
+            <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+              <strong>ATTENTION !</strong> Please verify your account to continue using our services.
+              <a href="/user/send-verification-email">Re-send Verification Email</a>
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      
+            </div>
+            <% } %>
+      
+              <% if(typeof emailsent !='undefined' ){ %>
+                <% if(emailsent){ %>
+                  <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <strong>SUCCESS</strong> Verification Email Sent Sucessfully. Valid Only for 20 minutes.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      
+                  </div>
+      
+                  <% } %>
+                    <% } %>
+                   
+
+
+                          <div class="row">
+
+                            <div class="col-12 col-md-8 col-lg-6 p-5 mx-auto bg-light">
+
+                              <% if(typeof err !='undefined' ){ %>
+                                <% if(err){ %>
+                                  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                    <strong>ERROR </strong>
+                                    <%= err %>.
+                                      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              
+                                  </div>
+              
+                                  <% } %>
+                                    <% } %>
+
+                              <form action="/create" , method="POST">
+                                <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                                <div class="mb-3">
+                                  <label for="url">Enter Long Url</label>
+                                  <input
+                                    type="url"
+                                    class="form-control form-control-lg"
+                                    name="original"
+                                    id="url"
+                                    autocomplete="off"
+                                    placeholder="Original Long URL"
+                                  />
+                                </div>
+                                <div class="mb-3">
+                                  <label for="short">Your Short slug</label>
+                                  <input
+                                    type="text"
+                                    class="form-control form-control-lg"
+                                    name="short"
+                                    id="short"
+                                    autocomplete="off"
+                                    placeholder="short"
+                                  />
+                                </div>
+                                <div class="d-grid gap-3 mb-3">
+                                  <input
+                                    type="submit"
+                                    class="btn btn-lg btn-block btn-outline-primary"
+                                    value="Create Url"
+                                  />
+                                 
+                                </div>
+                               
+                               
+                              </form>
+
+                            </div>
+
+                          </div>
+
+
+
+    </div>
+
+
+    <!-- / -->
+
+
+    <div class="container p-5"> 
+
+      <h2 class="text-center">Your Urls and Performance</h2>
+      <div class="row row-cols-1 g-4 text-center">
+        
+        <% if(urls.length != 0){ %>
+
+          <% urls.forEach((url) => { %>
+              <div class="col">
+                <div class="container shadow rounded-3 bg-light p-4">
+                  <div class="container row justify-content-around">
+
+                    <div class="col-12 col-md-4 col-lg-3  mb-3">
+                        <div class="card customcard  ratio ratio-1x1 shadow">
+                            <div class="d-flex flex-column justify-content-center align-item-center">
+                                <p>
+                                    Total <br />
+                                    Visits
+                                </p>
+                                <h2>
+                                    <%= url['visits'] %>
+                                </h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4 col-lg-3  mb-3">
+                        <div class="card customcard  ratio ratio-1x1 shadow">
+                            <div class="d-flex flex-column justify-content-center align-item-center">
+                                <p>
+                                    Facebook <br />
+                                    Visits
+                                </p>
+                                <h2>
+                                    <%= url['visitsFB'] %>
+                                </h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4 col-lg-3  mb-3">
+                        <div class="card customcard  ratio ratio-1x1 shadow">
+                            <div class="d-flex flex-column justify-content-center align-item-center">
+                                <p>
+                                    Instagram <br />
+                                    Visits
+                                </p>
+                                <h2>
+                                    <%= url['visitsIG'] %>
+                                </h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4 col-lg-3  mb-3">
+                        <div class="card customcard  ratio ratio-1x1 shadow">
+                            <div class="d-flex flex-column justify-content-center align-item-center">
+                                <p>
+                                    Youtube <br />
+                                    Visits
+                                </p>
+                                <h2>
+                                    <%= url['visitsYT'] %>
+                                </h2>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+                
+             
+                
+                <div class="row justify-centent-center">
+                  <div class="col-12 col-md-6 col-lg-5 mx-auto ">
+                    <canvas id="<%= url['_id'] %>" width="400" height="400"></canvas>
+                  </div>
+                </div>
+
+                <a href="http://localhost:8000/<%= url['slug'] %>" class="btn btn-primary mt-4">Visit Short Url</a>
+                
+              </div>
+              </div>
+                <% }) %>
+
+        <%  }else{ %>
+        <h2>No Urls created By You 😔😔</h2>
+        <% } %>
+
+      </div>
+    </div>
+
+
+
+    <%- include('./partials/footer.ejs'); %>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW"
+    crossorigin="anonymous"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js" integrity="sha512-d9xgZrVZpmmQlfonhQUvTR7lMPtO7NkZMkA0ABN3PHCbKA5nqylQ/yWlFAyY6hYgdF1Qh6nYiuADWwKB4C2WSw==" crossorigin="anonymous"></script>
+
+    
+    <script>
+  <% if(urls.length != 0){ %>
+
+<% urls.forEach((url) => { %>
+      var ct = document.getElementById('<%= url["_id"] %>').getContext('2d');
+
+      var myChart = new Chart(ct, {
+        type : 'doughnut',
+        data : {
+          labels : ['Total', 'Facebook', 'Instagram', 'Youtube'],
+          datasets : [{
+            label : 'Visits Distribution',
+            data : [<%= url['visits'] %>, <%= url['visitsFB'] %> , <%= url['visitsIG'] %> , <%= url['visitsYT'] %>],
+            backgroundColor: [
+                                'rgba(66, 103, 178, 1)',
+                                '#833AB4',
+                                '#FF0000',
+                                '#405DE6'
+                            ],
+          }]
+        }
+      });
+
+  <%  }) %>
+  <%  } %>
+   
+    </script>
+
+</body> 
+
+</html>
