@@ -27,7 +27,7 @@ npm install -D nodemon
 
 # Added Options
 
-![Image1](screenshots\shortly_main_page.png)
-![Image2](screenshots\dashboard.png)
+![Image1](screenshots/shortly_main_page.png)
+![Image2](screenshots/dashboard.png)
 
 
