@@ -92,16 +92,12 @@ router.get('/google/callback', passport.authenticate('google', { failureRedirect
     res.redirect('/dashboard');
 });
 
-router.get('/dashboard', checkAuth, (req, res) => {
-
-
+router.get('/dashboard', checkAuth, (req, res) => { 
     urls.find({ owned : req.user.email }, (err, data) => {
-        if(err) throw err;
-        
+        if(err) throw err; 
         res.render('dashboard', { verified: req.user.isVerified, logged: true, csrfToken: req.csrfToken(), urls : data });
         
-    });
-
+    }); 
 });
 
 
